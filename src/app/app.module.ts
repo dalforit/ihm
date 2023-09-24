@@ -19,7 +19,7 @@ import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzTableModule } from 'ng-zorro-antd/table'; 
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 registerLocaleData(fr);
 
@@ -39,7 +39,8 @@ registerLocaleData(fr);
     NzProgressModule, 
     NzTableModule, 
     NzIconModule, 
-    NzBadgeModule
+    NzBadgeModule, 
+    NzAlertModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: fr_FR }

@@ -2,6 +2,9 @@ import { Component, OnInit, ViewEncapsulation  } from '@angular/core';
 import { NzButtonSize } from 'ng-zorro-antd/button';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { AdresseipService } from './adresseip.service';
+import { AdresseIP } from './AdresseIP';
+import { Attack } from './Attack';
 
 @Component({
   selector: 'app-root',
@@ -12,53 +15,61 @@ import { NzProgressModule } from 'ng-zorro-antd/progress';
 
 export class AppComponent implements OnInit {
   
+  public apiBandePassanteOK = true; 
+  public apiadressesIPOK = true;
   title = 'switch';
   size: NzButtonSize = 'large';
   public onglet = 1; 
+
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   listOfData: ItemData[] = [];
+  public newDebit: number = 0;
+  public currentIP: string = ""; 
+  listOfDataIP: AdresseIP[] = [];
+  listOfAttacks: Attack[] = [];
 
-  startEdit(id: string): void {
-    this.editCache[id].edit = true;
+
+  constructor(private adresseipService: AdresseipService) { }
+
+
+  ngOnInit(): void {
+
+    this.adresseipService.getAllAdressesIp()      
+      .subscribe(data => {
+        console.log("data", data);
+      this.listOfDataIP = data;
+    });
+
+    this.adresseipService.getAllAttack()      
+    .subscribe(data => {
+    this.listOfAttacks = data;
+  });
+
   }
 
-  cancelEdit(ip: string): void {
-    const index = this.listOfData.findIndex(item => item.ip === ip);
-    this.editCache[ip] = {
-      data: { ...this.listOfData[index] },
-      edit: false
+  updateStatus(ip: string, status: string) {
+    console.log("component");
+    
+    const request: any = {
+      valueIPV4: ip,
+      status: status,
     };
-  }
-
-  saveEdit(ip: string): void {
-    const index = this.listOfData.findIndex(item => item.ip === ip);
-    Object.assign(this.listOfData[index], this.editCache[ip].data);
-    this.editCache[ip].edit = false;
-  }
-
-  updateEditCache(): void {
-    this.listOfData.forEach(item => {
-      this.editCache[item.ip] = {
-        edit: false,
-        data: { ...item }
-      };
+    this.adresseipService.updateStatus(request)      
+    .subscribe(data => {
+    console.log("Update OK");    
     });
   }
 
-  ngOnInit(): void {
-    const data = [];
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        ip: "193.5.5.5",
-        dateConnection: `03/03/2023 00:00:00`,
-        dateDeconnection: `03/03/2023 00:00:00`,
-        statut: `Bloqué`, 
-        debit: 10
-      });
-    }
-    this.listOfData = data;
-    this.updateEditCache();
-  }
+  // changeCurrentIP(ip: string) {
+  //   this.currentIP = ip; 
+  // }
+
+  // changerDebit(ip: string) {
+  //   const index = this.listOfData.findIndex(item => item.ip === this.currentIP);
+  //   let item = this.listOfData[index]; 
+  //   item.debit = this.newDebit; 
+  //   // Appeler service item
+  // }
 
 }
 
